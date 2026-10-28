@@ -30,6 +30,12 @@ fail () {
 setup_gitconfig () {
   if ! [ -f git/gitconfig.local.symlink ]
   then
+    if [ "${CODESPACES:-false}" == "true" ] || ! [ -t 0 ]
+    then
+      info 'skipping interactive gitconfig setup'
+      return
+    fi
+
     info 'setup gitconfig'
 
     git_credential='cache'
@@ -129,6 +135,10 @@ install_dotfiles () {
   info 'installing dotfiles'
 
   local overwrite_all=false backup_all=false skip_all=false
+  if [ "${CODESPACES:-false}" == "true" ] || ! [ -t 0 ]
+  then
+    skip_all=true
+  fi
 
   for src in $(find -H "$DOTFILES_ROOT" -maxdepth 2 -name '*.symlink' -not -path '*.git*')
   do
@@ -137,11 +147,21 @@ install_dotfiles () {
   done
 }
 
+install_copilot_skills () {
+  if [ -x "$DOTFILES_ROOT/copilot/install.sh" ]
+  then
+    info 'installing Copilot skills'
+    "$DOTFILES_ROOT/copilot/install.sh"
+    success 'Copilot skills installed'
+  fi
+}
+
 setup_gitconfig
 install_dotfiles
+install_copilot_skills
 
 # If we're on a Mac, let's install and setup homebrew.
-if [ "$(uname -s)" == "Darwin" ]
+if [ "$(uname -s)" == "Darwin" ] && [ "${CODESPACES:-false}" != "true" ]
 then
   info "installing dependencies"
   if source bin/dot | while read -r data; do info "$data"; done

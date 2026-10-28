@@ -58,6 +58,34 @@ script/bootstrap
 This will symlink the appropriate files in `.dotfiles` to your home directory.
 Everything is configured and tweaked within `~/.dotfiles`.
 
+### GitHub Codespaces
+
+Select `wiseemily88/dotfiles` as the Dotfiles repository in
+[Codespaces settings](https://github.com/settings/codespaces). New Codespaces
+will run `script/bootstrap` automatically. The bootstrap is non-interactive in
+Codespaces and installs personal Copilot CLI skills under
+`~/.copilot/skills`.
+
+The included `ai-daily-training` skill creates a personalized five-minute
+lesson based on recent development work. Invoke it from Copilot CLI with:
+
+```text
+ai-daily-training
+```
+
+Copilot CLI does not currently register personal skill names as custom slash
+commands. Use `/skills` to confirm that the skill was discovered.
+
+Lesson history is stored in
+`~/.copilot/state/ai-daily-training/history.json`, outside the dotfiles clone,
+so using the skill does not dirty the repository.
+
+Reusable prompts from completed lessons are saved in:
+
+```text
+~/.copilot/state/ai-daily-training/practice-prompts.md
+```
+
 The main file you'll want to change right off the bat is `zsh/zshrc.symlink`,
 which sets up a few paths that'll be different on your particular machine.
 
